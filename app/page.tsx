@@ -8,30 +8,24 @@ import {
   useQuery,
 } from "convex/react";
 import { api } from "../convex/_generated/api";
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/ModeToggle";
+import DocumentCard from "./documentCard";
+import CreateDocumentButton from "./create-document-button";
 
 export default function Home() {
-  const createDocument = useMutation(api.documents.createDocument);
   const documents = useQuery(api.documents.getDocuments);
+  const createDocument = useMutation(api.documents.createDocument);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Unauthenticated>
-        <SignInButton />
-      </Unauthenticated>
-      <Authenticated>
-        <UserButton />
-        <button
-          onClick={() => {
-            createDocument({ title: "hello world" });
-          }}
-        >
-          Click Me
-        </button>
+    <main className="p-24 space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-4xl font-bold">My Documents</h1>
+        <CreateDocumentButton />
 
-          {documents?.map((doc) => (
-            <div key={doc._id}>{doc.title}</div>
-          ))}
-
-      </Authenticated>
+      </div>
+      <div className="grid grid-cols-4 gap-8">
+        {documents?.map((document) => <DocumentCard document={document} />)}
+      </div>
     </main>
   );
 }
