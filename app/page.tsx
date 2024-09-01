@@ -11,7 +11,7 @@ import { api } from "../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/ModeToggle";
 import DocumentCard from "./documentCard";
-import CreateDocumentButton from "./create-document-button";
+import CreateDocumentButton from "./upload-document-button";
 
 export default function Home() {
   const documents = useQuery(api.documents.getDocuments);
@@ -24,7 +24,7 @@ export default function Home() {
 
       </div>
       <div className="grid grid-cols-4 gap-8">
-        {documents?.map((document) => <DocumentCard document={document} />)}
+        {documents?.map((document) => <DocumentCard document={document} key={document._id}/>)}
       </div>
     </main>
   );
