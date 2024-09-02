@@ -30,7 +30,7 @@ export default function DocumentPage({
           {document.documentUrl && <iframe src={document.documentUrl} className="w-full h-full"></iframe>}
         </div>
 
-        <ChatPanel />
+        <ChatPanel documentId={document._id}/>
       </div>
     </main>
   );
