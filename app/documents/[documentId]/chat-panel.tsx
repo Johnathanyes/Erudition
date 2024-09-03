@@ -4,44 +4,54 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 import { useAction, useQuery } from "convex/react";
 
 export default function ChatPanel({
   documentId,
 }: {
-  documentId: Id<"documents">
+  documentId: Id<"documents">;
 }) {
+  const chats = useQuery(api.chats.getChatsForDocument, { documentId });
   const askQuestion = useAction(api.documents.askQuestion);
 
   return (
-    <div className="w-[300px] bg-gray-900 flex flex-col gap-2 p-4">
-      <div className="overflow-y-auto h-[550px]">
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
-        <div className="p-4 bg-gray-700">asdgadnsdv</div>
+    <div className="bg-gray-900 flex flex-col gap-2 p-6 rounded-md">
+      <div className="overflow-y-auto h-[350px] space-y-4">
+        <div className="bg-slate-950 rounded p-3">
+          AI: Ask any question using AI about this document below:
+        </div>
+        {chats?.map((chat) => (
+          <div
+            className={cn(
+              {
+                "bg-slate-800": chat.isHuman,
+                "text-right": chat.isHuman,
+              },
+              "rounded p-2 whitespace-pre-line"
+            )}
+          >
+            {chat.isHuman ? "You" : "AI"}: {chat.text}
+          </div>
+        ))}
       </div>
       <div className="flex gap-1">
         <form
+          className="flex-1"
           onSubmit={async (event) => {
             event.preventDefault();
-            const form = event.target as HTMLFormElement
-            const formData = new FormData(form)
+            const form = event.target as HTMLFormElement;
+            const formData = new FormData(form);
             const text = formData.get("text") as string;
-            await askQuestion({question: text, documentId: documentId}).then(console.log);
+            await askQuestion({ question: text, documentId: documentId }).then(
+              console.log
+            );
           }}
         >
-          <Input required name="text" />
-          <Button>Submit</Button>
+          <div className="flex gap-4">
+            <Input required name="text" className="flex-1" />
+            <Button>Submit</Button>
+          </div>
         </form>
       </div>
     </div>
