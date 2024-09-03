@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { useAction, useQuery } from "convex/react";
+import QuestionForm from "./question-form";
 
 export default function ChatPanel({
   documentId,
@@ -36,23 +37,7 @@ export default function ChatPanel({
         ))}
       </div>
       <div className="flex gap-1">
-        <form
-          className="flex-1"
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const form = event.target as HTMLFormElement;
-            const formData = new FormData(form);
-            const text = formData.get("text") as string;
-            await askQuestion({ question: text, documentId: documentId }).then(
-              console.log
-            );
-          }}
-        >
-          <div className="flex gap-4">
-            <Input required name="text" className="flex-1" />
-            <Button>Submit</Button>
-          </div>
-        </form>
+        <QuestionForm documentId={documentId}/>
       </div>
     </div>
   );

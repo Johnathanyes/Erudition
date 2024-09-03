@@ -1,39 +1,29 @@
 "use client";
 
+import LoadingButton from "@/app/loading-button";
+import { Button } from "@/components/ui/button";
+import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { askQuestion, createDocument } from "@/convex/documents";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useAction } from "convex/react";
+import { Input } from "@/components/ui/input";
+import React from "react";
+import { Form, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { api } from "@/convex/_generated/api";
-import { useMutation } from "convex/react";
-import { Loader2 } from "lucide-react";
-import LoadingButton from "./loading-button";
-import { Id } from "@/convex/_generated/dataModel";
-
 const formSchema = z.object({
-  title: z.string().min(1).max(250),
-  file: z.instanceof(File),
+  text: z.string().min(1).max(250),
 });
 
-const UploadDocumentForm = ({ onUpload }: { onUpload: () => void }) => {
-  const createDocument = useMutation(api.documents.createDocument);
-  const generatedUploadUrl = useMutation(api.documents.generateUploadUrl);
+const QuestionForm = ({ documentId }: { documentId: Id<"documents"> }) => {
+  const askQuestion = useAction(api.documents.askQuestion);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      text: "",
     },
   });
 
@@ -54,6 +44,7 @@ const UploadDocumentForm = ({ onUpload }: { onUpload: () => void }) => {
     onUpload();
     console.log(url);
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -96,13 +87,13 @@ const UploadDocumentForm = ({ onUpload }: { onUpload: () => void }) => {
         />
         <LoadingButton
           isLoading={form.formState.isSubmitting}
-          loadingText="Uploading..."
+          loadingText="Submitting..."
         >
-          Upload
+          Submit
         </LoadingButton>
       </form>
     </Form>
   );
 };
 
-export default UploadDocumentForm;
+export default QuestionForm;
