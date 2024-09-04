@@ -27,6 +27,7 @@ export default function ChatPanel({
             className={cn(
               {
                 "bg-slate-800": chat.isHuman,
+                "bg-slate-950": !chat.isHuman,
                 "text-right": chat.isHuman,
               },
               "rounded p-2 whitespace-pre-line"

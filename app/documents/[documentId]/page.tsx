@@ -43,7 +43,7 @@ export default function DocumentPage({
             </div>
           </TabsContent>
           <TabsContent value="chat">
-            <ChatPanel documentId={document._id} />
+            <ChatPanel documentId={params.documentId} />
           </TabsContent>
         </Tabs>
       </div>
