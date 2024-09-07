@@ -1,5 +1,6 @@
 import {
   action,
+  internalAction,
   internalMutation,
   internalQuery,
   mutation,
@@ -19,33 +20,33 @@ const client = new OpenAI({
 
 export const hasAccessToDocument = async (
   ctx: MutationCtx | QueryCtx,
-  documentId: Id<"documents">,
+  documentId: Id<"documents">
 ) => {
-    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!userId) {
-        return null
-    }
-    const document = await ctx.db.get(documentId);
+  const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+  if (!userId) {
+    return null;
+  }
+  const document = await ctx.db.get(documentId);
 
-    if (!document) {
-        return null
-    }
+  if (!document) {
+    return null;
+  }
 
-    if (document.tokenIdentifier !== userId) {
-        return null
-    }
-    
-    return {document, userId};
+  if (document.tokenIdentifier !== userId) {
+    return null;
+  }
+
+  return { document, userId };
 };
 
 export const hasAccessToDocumentQuery = internalQuery({
-    args: {
-        documentId: v.id("documents"),
-    },
-    handler: async (ctx, args) => {
-        return await hasAccessToDocument(ctx, args.documentId)
-    }
-})
+  args: {
+    documentId: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    return await hasAccessToDocument(ctx, args.documentId);
+  },
+});
 
 export const generateUploadUrl = mutation(async (ctx) => {
   return await ctx.storage.generateUploadUrl();
@@ -63,11 +64,21 @@ export const createDocument = mutation({
       throw new ConvexError("Not Authenticated");
     }
 
-    await ctx.db.insert("documents", {
+    const documentId = await ctx.db.insert("documents", {
       title: args.title,
       tokenIdentifier: userId,
       fileId: args.fileId,
+      description: "",
     });
+
+    await ctx.scheduler.runAfter(
+      0,
+      internal.documents.generateDocumentDescription,
+      {
+        fileId: args.fileId,
+        documentId,
+      }
+    );
   },
 });
 
@@ -94,7 +105,7 @@ export const getDocument = query({
     const accesObject = await hasAccessToDocument(ctx, args.documentId);
 
     if (!accesObject) {
-        return null;
+      return null;
     }
 
     return {
@@ -110,10 +121,12 @@ export const askQuestion = action({
     documentId: v.id("documents"),
   },
   handler: async (ctx, args) => {
-
-    const accesObject = await ctx.runQuery(internal.documents.hasAccessToDocumentQuery, {
+    const accesObject = await ctx.runQuery(
+      internal.documents.hasAccessToDocumentQuery,
+      {
         documentId: args.documentId,
-    })
+      }
+    );
 
     if (!accesObject) {
       throw new ConvexError("You do not have access to this document");
@@ -155,6 +168,54 @@ export const askQuestion = action({
       text: response,
       isHuman: false,
       tokenIdentifier: accesObject.userId,
+    });
+  },
+});
+
+export const updateDocumentDescription = internalMutation({
+  args: {
+    documentId: v.id("documents"),
+    description: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.documentId, {
+      description: args.description,
+    });
+  },
+});
+
+export const generateDocumentDescription = internalAction({
+  args: {
+    fileId: v.id("_storage"),
+    documentId: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const file = await ctx.storage.get(args.fileId);
+
+    if (!file) {
+      return new ConvexError("File not found");
+    }
+    const text = await file.text();
+
+    const chatCompletion: OpenAI.Chat.Completions.ChatCompletion =
+      await client.chat.completions.create({
+        messages: [
+          { role: "system", content: `here is a text file: ${text}` },
+          {
+            role: "user",
+            content: `Generate a 1 sentence description for this documen`,
+          },
+        ],
+        model: "gpt-3.5-turbo",
+      });
+
+    const response =
+      chatCompletion.choices[0].message.content ??
+      "Could not generate a description";
+
+    await ctx.runMutation(internal.documents.updateDocumentDescription, {
+      documentId: args.documentId,
+      description: response,
     });
   },
 });

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Doc } from "@/convex/_generated/dataModel";
 
-import { Eye } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 const DocumentCard = ({document}: {document: Doc<"documents">}) => {
@@ -18,10 +18,9 @@ const DocumentCard = ({document}: {document: Doc<"documents">}) => {
       <Card>
         <CardHeader>
           <CardTitle>{document.title}</CardTitle>
-          <CardDescription>Card Description</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Card Content</p>
+          <p>{!document.description ? <Loader2 className="animate-spin" /> : document.description}</p>
         </CardContent>
         <CardFooter>
             <Button asChild variant="secondary" className="flex gap-2 items-center">
