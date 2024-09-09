@@ -68,7 +68,7 @@ export const createDocument = mutation({
       title: args.title,
       tokenIdentifier: userId,
       fileId: args.fileId,
-      description: "",
+      description: "", 
     });
 
     await ctx.scheduler.runAfter(

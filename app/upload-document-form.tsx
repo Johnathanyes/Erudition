@@ -52,7 +52,6 @@ const UploadDocumentForm = ({ onUpload }: { onUpload: () => void }) => {
       fileId: storageId as Id<"_storage">,
     });
     onUpload();
-    console.log(url);
   }
   return (
     <Form {...form}>
