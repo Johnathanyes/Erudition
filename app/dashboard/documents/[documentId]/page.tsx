@@ -45,11 +45,11 @@ export default function DocumentPage({
                 <TabsTrigger value="chat">Chat</TabsTrigger>
               </TabsList>
               <TabsContent value="document">
-                <div className="bg-gray-900 p-4 rounded flex-1 h-[600px]">
+                <div className="bg-stone-950 p-4 rounded flex-1 h-[600px]">
                   {document.documentUrl && (
                     <iframe
                       src={document.documentUrl}
-                      className="w-full h-full"
+                      className="w-full h-full bg-stone-900"
                     ></iframe>
                   )}
                 </div>

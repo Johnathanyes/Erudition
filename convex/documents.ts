@@ -24,16 +24,16 @@ export const hasAccessToDocument = async (
 ) => {
   const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
   if (!userId) {
-    return null;
+    throw new ConvexError("Must be logged in");
   }
   const document = await ctx.db.get(documentId);
 
   if (!document) {
-    return null;
+    throw new ConvexError("No document found");
   }
 
   if (document.tokenIdentifier !== userId) {
-    return null;
+    throw new ConvexError("Trying to access document that does not belong to user");
   }
 
   return { document, userId };
@@ -105,7 +105,7 @@ export const getDocument = query({
     const accesObject = await hasAccessToDocument(ctx, args.documentId);
 
     if (!accesObject) {
-      return null;
+      throw new ConvexError("Could not get document")
     }
 
     return {
@@ -146,7 +146,7 @@ export const askQuestion = action({
           { role: "system", content: `here is a text file: ${text}` },
           {
             role: "user",
-            content: `please answer this question: ${args.question}`,
+            content: `Answer this question: ${args.question}`,
           },
         ],
         model: "gpt-3.5-turbo",

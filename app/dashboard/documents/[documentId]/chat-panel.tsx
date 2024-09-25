@@ -17,17 +17,17 @@ export default function ChatPanel({
   const askQuestion = useAction(api.documents.askQuestion);
 
   return (
-    <div className="bg-gray-900 flex flex-col gap-2 p-6 rounded-md">
+    <div className="bg-stone-900 flex flex-col gap-2 p-6 rounded-md">
       <div className="overflow-y-auto h-[350px] space-y-4">
-        <div className="bg-slate-950 rounded p-3">
+        <div className="bg-stone-950 rounded p-3">
           AI: Ask any question using AI about this document below:
         </div>
         {chats?.map((chat) => (
           <div
             className={cn(
               {
-                "bg-slate-800": chat.isHuman,
-                "bg-slate-950": !chat.isHuman,
+                "bg-stone-800": chat.isHuman,
+                "bg-stone-950": !chat.isHuman,
                 "text-right": chat.isHuman,
               },
               "rounded p-2 whitespace-pre-line"

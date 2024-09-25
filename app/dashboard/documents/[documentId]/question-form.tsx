@@ -19,7 +19,7 @@ import { Id } from "@/convex/_generated/dataModel";
 
 
 const formSchema = z.object({
-  text: z.string().min(1).max(250),
+  text: z.string().min(3).max(260),
 });
 
 const QuestionForm = ({ documentId }: { documentId: Id<"documents"> }) => {
@@ -45,7 +45,7 @@ const QuestionForm = ({ documentId }: { documentId: Id<"documents"> }) => {
           render={({ field }) => (
             <FormItem className="flex-1">
               <FormControl>
-                <Input placeholder="Ask any question about your document" {...field} />
+                <Input placeholder="Ask any question about your document..." {...field} className="hover:cursor-pointer"/>
               </FormControl>
               <FormMessage />
             </FormItem>

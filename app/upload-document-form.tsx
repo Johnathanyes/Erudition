@@ -61,12 +61,12 @@ const UploadDocumentForm = ({ onUpload }: { onUpload: () => void }) => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>File</FormLabel>
+              <FormLabel>File Name</FormLabel>
               <FormControl>
                 <Input type="text" placeholder="Expense report" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                This is your public file name name.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -77,7 +77,7 @@ const UploadDocumentForm = ({ onUpload }: { onUpload: () => void }) => {
           name="file"
           render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Upload file</FormLabel>
               <FormControl>
                 <Input
                   type="file"
@@ -97,7 +97,7 @@ const UploadDocumentForm = ({ onUpload }: { onUpload: () => void }) => {
           isLoading={form.formState.isSubmitting}
           loadingText="Uploading..."
         >
-          Upload
+          Upload Document
         </LoadingButton>
       </form>
     </Form>
