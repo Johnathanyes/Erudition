@@ -24,6 +24,7 @@ export default function ChatPanel({
         </div>
         {chats?.map((chat) => (
           <div
+          key={chat._id}
             className={cn(
               {
                 "bg-stone-800": chat.isHuman,
